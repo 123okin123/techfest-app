@@ -1,26 +1,46 @@
-import React, {Component} from 'react'
-import {  Text,View, StyleSheet} from 'react-native'
-import { Agenda } from 'react-native-calendars';
+//@flow
+import {  Text,View, Dimensions, StyleSheet, SectionList, ActivityIndicator, Platform} from 'react-native'
 import {colors, fonts, store} from '../helpers'
 import {connect} from 'react-redux'
 import {pageActions} from "../actions";
+import * as React from 'react';
+import {Component} from 'react';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
+
 
 type Props = {
-    eventAgenda: {
-        [date: string]: Array<{
-            time: string,
-            length: number,
-            title: string,
-            description: string
-        }>
-    }
+    fetchingState: {
+        fetching?: boolean,
+        success?: boolean,
+        error?: boolean
+    },
+    day1: Day,
+    day2: Day,
+    day3: Day
 }
+
+
+type Day = Array<{
+    sectionheader?: string,
+    data?: Array<{
+        title: string,
+        description: string,
+        time: string,
+        duration: number
+    }>
+}>
+
 
 class EventAgenda extends Component<Props> {
     constructor(props) {
         super(props);
         this.state = {
-            items: {}
+            index: 0,
+            routes: [
+                { key: 'first', title: 'DAY 1' },
+                { key: 'second', title: 'DAY 2' },
+                { key: 'third', title: 'DAY 3' },
+            ],
         };
     }
 
@@ -28,31 +48,68 @@ class EventAgenda extends Component<Props> {
         store.dispatch(pageActions.fetchPageIfNeeded('4241'))
     }
 
-    renderItem(item) {
-        return (
-          <View style={[styles.item, {height: parseInt(item.duration * 2)}]}>
-              <Text>{item.time}</Text>
-              <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
-              <Text numberOfLines={2}>{item.description}</Text>
-          </View>
-        );
+
+    renderDay(day: Day) {
+        if (this.props.fetchingState.fetching) {
+            return (
+              <ActivityIndicator style={{marginTop: 50}} animating size="small" color={colors.primary}/>
+            )
+        } else if (this.props.fetchingState.success && day.length > 0 && day[0].data) {
+            return (
+              <SectionList
+                onRefresh={()=>store.dispatch(pageActions.fetchPage('4241'))}
+                refreshing={this.props.fetchingState.fetching || false}
+                renderItem={({item, index, section}) =>
+                  <View key={index} style={[styles.item, {height: parseInt(item.duration * 3)}]}>
+                      <Text style={styles.itemTime}>{item.time}</Text>
+                      <Text style={styles.itemTitle}>{item.title}</Text>
+                      <Text style={styles.itemDescription}>{item.description}</Text>
+                  </View>
+                }
+                renderSectionHeader={({section: {sectionheader}}) => (
+                  <View style={styles.sectionHeader}>
+                      <Text style={styles.sectionTitle}>{sectionheader}</Text>
+                  </View>
+                )}
+                sections={day}
+                keyExtractor={(item, index) => item + index}
+              />
+            )
+        } else {
+            return <View/>
+        }
     }
 
+
+
     render() {
+        console.log(this.props);
         return (
           <View style={styles.container}>
-          <Agenda
-            items={this.props.eventAgenda}
-            pastScrollRange={0}
-            futureScrollRange={0}
-            selected={'2018-06-15'}
-            minDate={'2018-06-14'}
-            maxDate={'2018-06-18'}
-            renderItem={this.renderItem.bind(this)}
-            renderEmptyDate={()=><View style={styles.emptyDate}><Text>This is empty date!</Text></View>}
-            rowHasChanged={(r1, r2)=>r1.title !== r2.title}
-            theme={calendarTheme}
-          />
+              <TabView
+                navigationState={this.state}
+                renderScene={SceneMap({
+                    first: ()=> this.renderDay(this.props.day1),
+                    second: ()=> this.renderDay(this.props.day2),
+                    third: ()=> this.renderDay(this.props.day3),
+                })}
+                renderTabBar={props =>
+                  <TabBar
+                    {...props}
+                    indicatorStyle={{backgroundColor: colors.primary, height: 8}}
+                    style={{
+                        backgroundColor: colors.background,
+                        shadowOffset:{  width: 0,  height: 7 },
+                        shadowColor: '#000',
+                        shadowOpacity: 0.14,
+                    }}
+                    labelStyle={{color: colors.primary, fontFamily: fonts.bold}}
+                  />
+                }
+                onIndexChange={index => this.setState({index})}
+                initialLayout={{width: Dimensions.get('window').width}}
+              />
+
           </View>
         )
     }
@@ -68,50 +125,57 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
         paddingTop: 20
     },
+    sectionHeader: {
+        backgroundColor: colors.hightlight,
+        height: 30,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+        shadowOffset:{  width: 0,  height: 7 },
+        shadowColor: '#000',
+        shadowOpacity: 0.14
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontFamily: fonts.bold,
+        color: colors.background
+    },
     item: {
         backgroundColor: 'white',
         flex: 1,
         borderRadius: 5,
-        padding: 10,
-        marginRight: 10,
-        marginTop: 17
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginHorizontal: 20,
+        marginVertical: 10,
+        shadowOffset:{  width: 0,  height: 3 },
+        shadowColor: '#000',
+        shadowOpacity: 0.14
     },
     itemTitle: {
-        fontFamily: fonts.bold
+        fontFamily: fonts.bold,
+        color: colors.primary,
+        marginBottom: -5,
     },
-    emptyDate: {
-        height: 15,
-        flex:1,
-        paddingTop: 30
+    itemTime: {
+        fontFamily: fonts.normal,
+        color: colors.primary,
+        marginBottom: -5,
+    },
+    itemDescription: {
+        fontFamily: fonts.normal,
+        color: colors.primary
     }
 });
 
 
-const calendarTheme = {
-    backgroundColor: colors.background,
-    calendarBackground: colors.background,
-    textSectionTitleColor: colors.inactive,
-    selectedDayBackgroundColor: colors.primary,
-    selectedDayTextColor: colors.secondary,
-    todayTextColor: colors.secondary,
-    dayTextColor: colors.primary,
-    textDisabledColor: colors.inactive,
-    dotColor: colors.primary,
-    selectedDotColor: colors.secondary,
-    textDayFontFamily: fonts.normal,
-    textMonthFontFamily: fonts.normal,
-    textDayHeaderFontFamily: fonts.normal,
-};
 
 const mapStateToProps = (state) => {
-    const agendaArray: Array<{date: string, items: Array<{title: string, description: string, time: string, duration: number}>}> = (((state.pages['4241'] || {}).response || {}).acf || {}).event_agenda || [];
-    const eventAgenda = agendaArray.reduce(function(map, obj) {
-        map[obj.date] = obj.items;
-        return map;
-    }, {});
     return {
-        eventAgenda
-  }
+        day1:  (((state.pages['4241'] || {}).response || {}).acf || {}).day1 || [],
+        day2:  (((state.pages['4241'] || {}).response || {}).acf || {}).day2 || [],
+        day3:  (((state.pages['4241'] || {}).response || {}).acf || {}).day3 || [],
+        fetchingState: (state.pages['4241'] || {}).fetchingState || {}
+    }
 };
 
 

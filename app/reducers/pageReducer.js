@@ -3,9 +3,7 @@ import {pageConstants, type Action} from '../constants'
 
 export type Pages = {
     +[string]: {
-        +isFetching: false,
-        +id: string,
-        +response: string,
+        response: string,
         fetchingState: {
             fetching?: boolean,
             success?: boolean,

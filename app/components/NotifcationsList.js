@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     item: {
-        height: 100,
+        height: 110,
     },
     innerItem: {
         paddingTop: 10,
@@ -70,16 +70,17 @@ const styles = StyleSheet.create({
         paddingRight: 10,
         marginLeft: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#212529'
+        borderBottomColor: colors.primary
     },
     itemTitle: {
         fontSize: 20,
         fontFamily: fonts.bold,
-        //fontWeight: "bold",
+        color: colors.primary
     },
     itemDescription: {
         fontSize: 18,
         fontFamily: fonts.normal,
+        color: colors.primary
     },
     emptyText: {
         fontSize: 25,

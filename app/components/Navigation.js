@@ -95,6 +95,7 @@ export default createBottomTabNavigator(
               shadowColor: '#000',
               shadowOpacity: 0.14,
               borderTopColor: colors.background,
+              elevation:10,
           }
       },
 

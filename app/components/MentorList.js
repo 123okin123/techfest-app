@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {type Mentor, type User, roles} from '../constants/'
 import {mentorActions} from "../actions/index";
 import {Dimensions, View, Text, Image, StyleSheet} from "react-native";
-import {fonts, store} from '../helpers'
+import {fonts, store, colors} from '../helpers'
 
 const win = Dimensions.get('window');
 
@@ -45,12 +45,12 @@ class MentorList extends Component<Props> {
         return (
           <View style={styles.mentorCollection}>
               {filteredMentors.length === 0 &&
-              <Text>No mentors yet.</Text>
+              <Text style={{color: colors.primary}}>No mentors yet.</Text>
               }
               {filteredMentors.map((mentor: Mentor, index: number)=>
                 <View style={styles.mentorContainer} key={index.toString()}>
                     {console.log(mentor.imageURL)}
-                    <Image style={styles.imageContainer} source={{uri: `https://www.techfestmunich.com${mentor.imageURL}?token=${token}`}} resizeMode={'cover'}/>
+                    <View style={styles.imageContainer}><Image style={styles.imageContainer} source={{uri: `https://www.techfestmunich.com${mentor.imageURL}?token=${token}`}} resizeMode={'cover'}/></View>
                     <Text style={styles.name}>{mentor.firstName} {mentor.lastName}</Text>
                     <Text style={{textAlign: 'center'}}>{mentor.company}</Text>
                     <View style={styles.skillContainer}>
@@ -69,7 +69,8 @@ class MentorList extends Component<Props> {
 const styles = StyleSheet.create({
     mentorCollection: {
         flex: 1,
-        paddingBottom: 20
+        paddingBottom: 20,
+        marginBottom: 50
     },
     mentorContainer: {
         flex: 1,
@@ -91,8 +92,8 @@ const styles = StyleSheet.create({
     imageContainer: {
         height: 180,
         width: 180,
-        marginVertical: 20,
         borderRadius: 90,
+        overflow: 'hidden',
         backgroundColor: '#e9ecef',
     },
     skill: {

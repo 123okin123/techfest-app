@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
-import {View,TouchableWithoutFeedback,TextInput,Button, StyleSheet, Keyboard, Image, AsyncStorage} from 'react-native'
+import {View,TouchableWithoutFeedback,TextInput,Button, StyleSheet, Image, Keyboard, Animated, Dimensions} from 'react-native'
 import {colors} from '../helpers'
 import {userActions} from "../actions";
 import { connect } from 'react-redux';
-import {API_URL} from "../constants";
 
 
 
@@ -16,23 +15,48 @@ type State = {
     password: string
 }
 
+const window = Dimensions.get('window');
+ const PADDING_TOP = window.height /5;
+ const PADDING_TOP_SMALL = window.height /7;
+
 class Login extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         (this: any).onLoginPressed = this.onLoginPressed.bind(this);
+        this.paddingTop = new Animated.Value(PADDING_TOP);
         this.state = {
             email: '',
             password: ''
         }
     }
 
-    componentDidMount() {
+    componentWillMount () {
+        this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+        this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+    }
 
+    componentWillUnmount() {
+        this.keyboardWillShowSub.remove();
+        this.keyboardWillHideSub.remove();
     }
 
 
-    onLoginPressed() {
+    keyboardWillShow = (event) => {
+        console.log(event);
+        Animated.timing(this.paddingTop, {
+            duration: event.duration,
+            toValue: PADDING_TOP_SMALL,
+        }).start();
+    };
 
+    keyboardWillHide = (event) => {
+        Animated.timing(this.paddingTop, {
+            duration: event.duration,
+            toValue: PADDING_TOP,
+        }).start();
+    };
+
+    onLoginPressed() {
         this.props.login(this.state.email, this.state.password);
     }
 
@@ -40,7 +64,7 @@ class Login extends Component<Props, State> {
         return (
           <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
               <View style={styles.background}>
-              <Image style={styles.logo} source={require('../assets/TechFest-Logo_schwarz.png')} />
+              <Animated.Image style={[styles.logo, { height: this.paddingTop }]} source={require('../assets/TechFest-Logo_schwarz.png')} />
               <TextInput
                 style={this.props.loginFailure ? [styles.invalidTextInput, styles.textInput] :styles.textInput}
                 placeholder="E-Mail"
@@ -68,6 +92,7 @@ class Login extends Component<Props, State> {
 
 const styles = StyleSheet.create({
     logo: {
+     //   height: IMAGE_HEIGHT,
         width: 250,
         resizeMode: Image.resizeMode.contain,
         alignSelf: 'center'
@@ -78,7 +103,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         padding: 20,
-        paddingTop: 100
+        paddingTop: PADDING_TOP
     },
     textInput: {
         height: 40,

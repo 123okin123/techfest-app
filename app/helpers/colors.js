@@ -6,6 +6,6 @@ export const colors = {
   primary: '#212529',
     secondary: '#fff',
   inactive: '#5f5f5f',
-  danger: '#dc3545'
-
+  danger: '#dc3545',
+  hightlight: '#7913a5'
 };

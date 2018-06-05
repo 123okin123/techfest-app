@@ -103,13 +103,16 @@ const styles = StyleSheet.create({
     },
     heading1: {
         fontFamily: fonts.bold,
-        fontSize: 30
+        fontSize: 30,
+        color: colors.primary
+
     },
     challengeDescription: {
         fontFamily: fonts.normal,
         fontSize: 18,
         marginBottom: 40,
-        marginTop: 20
+        marginTop: 20,
+        color: colors.primary
     }
 });
 

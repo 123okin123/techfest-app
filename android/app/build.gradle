@@ -94,7 +94,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     buildToolsVersion "23.0.1"
 
     defaultConfig {
@@ -148,13 +148,21 @@ dependencies {
     //compile 'com.google.firebase:firebase-core:16.0.0'
 
     // Firebase dependencies
-    implementation "com.google.android.gms:play-services-base:16.0.0"
+    //implementation "com.google.android.gms:play-services-base:16.0.0"
     implementation "com.google.firebase:firebase-core:16.0.0"
+
+    implementation "com.google.android.gms:play-services-base:15.0.0"
+    implementation "com.google.firebase:firebase-core:15.0.2"
+
 
 
     implementation "com.google.firebase:firebase-messaging:17.0.0"
 
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar' // <-- Add this line if you wish to use badge on Android
+
+
+   // implementation 'com.google.android.gms:play-services-measurement-base:15.0.4'
+
 }
 
 // Run this once to be able to run the application with BUCK
