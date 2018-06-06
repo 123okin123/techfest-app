@@ -52,7 +52,7 @@ class MentorList extends Component<Props> {
                     {console.log(mentor.imageURL)}
                     <View style={styles.imageContainer}><Image style={styles.imageContainer} source={{uri: `https://www.techfestmunich.com${mentor.imageURL}?token=${token}`}} resizeMode={'cover'}/></View>
                     <Text style={styles.name}>{mentor.firstName} {mentor.lastName}</Text>
-                    <Text style={{textAlign: 'center'}}>{mentor.company}</Text>
+                    <Text style={styles.company}>{mentor.company}</Text>
                     <View style={styles.skillContainer}>
                         {mentor.skills.map((skill, index)=>
                           <View style={styles.skill} key={index.toString()}><Text style={styles.skillText}>#{skill}</Text></View>
@@ -87,7 +87,12 @@ const styles = StyleSheet.create({
     name: {
         fontFamily: fonts.bold,
         fontSize: 20,
-        textAlign: 'center'
+        textAlign: 'center',
+        color: colors.primary
+    },
+    company: {
+        textAlign: 'center',
+        color: colors.primary
     },
     imageContainer: {
         height: 180,
@@ -104,7 +109,7 @@ const styles = StyleSheet.create({
         margin: 5
     },
     skillText: {
-        fontSize: 18,
+        fontSize: 17,
         color: '#6c757d',
         fontFamily: fonts.normal,
     },
